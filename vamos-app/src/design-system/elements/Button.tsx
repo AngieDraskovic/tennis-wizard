@@ -37,7 +37,6 @@ export function Button({
         disabled: 'bg-white text-slate-400 border-slate-400'
     }
 
-    console.log(`${styleBase} ${variantClasses[variant]}`)
     return <button className={`${styleBase} ${variantClasses[variant]}`} 
         onClick={onClick}
     >
