@@ -2,7 +2,7 @@
 vamos-back/.venv/
 vamos-back/.env
 vamos-back/*.db
-vamos-back/__pycache__/
+vamos-back/app/__pycache__/
 
 # OS / IDE
 .DS_Store
