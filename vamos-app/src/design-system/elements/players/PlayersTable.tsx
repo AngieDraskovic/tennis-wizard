@@ -25,7 +25,7 @@ export function PlayersTable({players}: PlayersTableProps){
 
                   return (
                     <tr
-                      key={player.playerId}
+                      key={(player.playerId)}
                       className='border-b border-slate-800/70 hover:bg-slate-800/30 transition-colors'
                     >
                       <td className='px-6 py-4'>
