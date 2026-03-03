@@ -9,12 +9,25 @@ export type TopPlayerResponse = {
   player_name?: string;
 };
 
-export async function getTopPlayers(params?: { minMatches?: number; limit?: number }): Promise<Player[]>{
+export type PlayerFiltersParams = {
+  limit?: string;
+  season?: string;
+  surface?: string;
+  minMatches?: number;
+}
+
+export async function getTopPlayers(params?: PlayerFiltersParams): Promise<Player[]>{
   const q = new URLSearchParams();
-  if (params?.minMatches != null) 
+  console.log(params?.season)
+  if (params?.minMatches) 
     q.set('min_matches', String(params.minMatches));
-  if (params?.limit == null) 
-    q.set('limit', String(100));
+  if (params?.limit) 
+    q.set('limit', params.limit);
+  if (params?.season) 
+    q.set('season', params.season);
+  if (params?.surface) 
+    q.set('surface', params.surface);
+
 
   const suffix = q.toString() ? `?${q.toString()}` : '';
 

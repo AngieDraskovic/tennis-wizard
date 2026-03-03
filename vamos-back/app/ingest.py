@@ -7,7 +7,7 @@ import os
 
 
 KEEP_COLS = [
-   'tourney_id', 'winner_id', 'winner_name', 'winner_rank', 'tourney_name', 'loser_id', 'loser_name', 'tourney_date',
+   'tourney_id', 'winner_id', 'winner_name', 'winner_rank', 'tourney_name', 'loser_id', 'loser_name', 'tourney_date', 'surface',
 ]
 
 def find_csv_files() -> list[Path]:
@@ -73,10 +73,10 @@ def check_number(player) -> None:
 def create_player_matches_tb() -> None: 
     query = text("""
     CREATE TABLE player_matches AS
-    SELECT tourney_id, winner_id AS player_id, winner_name AS player_name, loser_id AS opponent_id, loser_name AS opponent_name, 1 AS is_winner
+    SELECT tourney_id, winner_id AS player_id, winner_name AS player_name, loser_id AS opponent_id, loser_name AS opponent_name, 1 AS is_winner, season, surface
     FROM matches_raw 
     UNION ALL
-    SELECT tourney_id, loser_id AS player_id, loser_name AS player_name, winner_id AS opponent_id, winner_name AS opponent_name, 0 AS is_winner
+    SELECT tourney_id, loser_id AS player_id, loser_name AS player_name, winner_id AS opponent_id, winner_name AS opponent_name, 0 AS is_winner, season, surface
     FROM matches_raw
     """)
     with engine.begin() as conn:
@@ -108,6 +108,15 @@ def win_percentage() -> None:
     execute_query(query)
 
 
+def find_all_surfaces() -> None:
+    
+    query = text("""
+
+    SELECT COUNT(*), surface FROM player_matches group by surface
+    """)
+
+    execute_query(query)
+
 def execute_query(query):
     with engine.begin() as conn:
         # df = pd.read_sql(query, conn)
@@ -138,7 +147,8 @@ def run() -> None:
     # check_number('Novak Djokovic')
     print(f"✅ Ingest gotov: rows={len(df)} cols={len(df.columns)} -> DB={settings.db_path}")
     create_player_matches_tb()
-    top_ten_players()
+    # top_ten_players()
+    find_all_surfaces()
 
 if __name__ == "__main__":
     run()

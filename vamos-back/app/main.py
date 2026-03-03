@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes.routes_players import router as player_router
+from app.routes.routes_matches import router as matches_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -11,4 +12,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(player_router)
-
+app.include_router(matches_router)
