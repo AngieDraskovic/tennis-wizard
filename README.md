@@ -52,6 +52,7 @@ cd vamos
 ### 2. Run the application with Docker
 
 ```bash
+docker compose run --rm backend python -m app.ingest
 docker compose up --build
 ```
 
