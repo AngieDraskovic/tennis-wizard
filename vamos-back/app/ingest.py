@@ -144,11 +144,10 @@ def run() -> None:
     files = find_csv_files()
     df = load_and_concat(files)
     write_to_sqlite(df)
-    # check_number('Novak Djokovic')
     print(f"✅ Ingest gotov: rows={len(df)} cols={len(df.columns)} -> DB={settings.db_path}")
     create_player_matches_tb()
     # top_ten_players()
-    find_all_surfaces()
+    # find_all_surfaces()
 
 if __name__ == "__main__":
     run()
