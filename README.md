@@ -49,7 +49,22 @@ cd vamos
 
 ---
 
-### 2. Run the application with Docker
+### 2. Import Data (required)
+
+Before starting the application, you must populate the database:
+
+```bash
+docker compose run --rm backend python -m app.ingest
+```
+
+This step:
+
+* reads tennis match data from CSV files
+* creates and populates the SQLite database (`tennis.db`)
+
+---
+
+### 3. Run the Application
 
 ```bash
 docker compose run --rm backend python -m app.ingest
@@ -58,37 +73,39 @@ docker compose up --build
 
 ---
 
-### 3. Access the app
+### 4. Access the App
 
 * Frontend → http://localhost:5173
-* Backend API docs → http://localhost:8000/docs
+* Backend API docs → http://localhost:8000
 
 ---
 
-## 🧠 How It Works
+## 🧠 Data Persistence
 
-* Backend runs a FastAPI server exposing endpoints for tennis data
-* Frontend consumes the API and displays player statistics
-* SQLite is used as a lightweight local database
-* Docker Compose orchestrates both services
-* Volumes are used for hot reload during development
+The application uses SQLite as a local database.
+
+The database file (`tennis.db`) is stored on your machine via a Docker volume mount, meaning:
+
+* data persists between container restarts
+* data is shared between the container and your local environment
+* you can inspect the database file directly
 
 ---
 
-## 🗄️ Database
+## 🔄 Resetting the Database
 
-The project uses SQLite for simplicity:
+To reset the data:
 
-```python
-engine = create_engine(
-    f"sqlite:///{settings.db_path}",
-    future=True
-)
+```bash
+docker compose down -v
+docker compose run --rm backend python -m app.ingest
 ```
 
-The database file is stored locally and persists between runs.
+This will:
 
----
+* remove existing containers and volumes
+* recreate the database from scratch
+
 
 ## 🔧 Development Notes
 

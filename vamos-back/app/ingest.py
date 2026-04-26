@@ -3,7 +3,6 @@ from .db import engine
 from sqlalchemy import text
 import pandas as pd
 from pathlib import Path
-import os
 
 
 KEEP_COLS = [
@@ -55,21 +54,6 @@ def write_to_sqlite(df: pd.DataFrame) -> None:
             pass
 
 
-
-def check_number(player) -> None:
-    query = text("""
-        SELECT 
-        COUNT(*) FILTER ( WHERE winner_name = :player) as wins,
-        COUNT(*) FILTER ( WHERE loser_name = :player) as losses,
-        COUNT(*) FILTER ( WHERE winner_name = :player OR loser_name = :player) as total
-        FROM matches_raw
-        """)
-    with engine.begin() as conn:
-        result = conn.execute(query, {'player' : player}).one()
-
-    print(f'row count: {result.total} {result.wins} {result.losses}')
-
-
 def create_player_matches_tb() -> None: 
     query = text("""
     CREATE TABLE player_matches AS
@@ -81,63 +65,7 @@ def create_player_matches_tb() -> None:
     """)
     with engine.begin() as conn:
         conn.execute(text("DROP TABLE IF EXISTS player_matches"))
-        result = conn.execute(query)
 
-    print('')
-
-def count_matches_per_player() -> None:
-    query = text("""
-    SELECT COUNT(player_id) as matches_count, player_name 
-    FROM player_matches 
-    GROUP BY player_id 
-    ORDER BY matches_count 
-    """)
-    
-    execute_query(query)
-
-
-def win_percentage() -> None:
-    query = text("""
-
-    SELECT COUNT(player_id) as matches_count, SUM(is_winner) as win_number, ROUND((SUM(is_winner) * 1.0/COUNT(*)) * 100, 2) AS percentage_win, player_name 
-    FROM player_matches 
-    GROUP BY player_id 
-    ORDER BY percentage_win
-    """)
-
-    execute_query(query)
-
-
-def find_all_surfaces() -> None:
-    
-    query = text("""
-
-    SELECT COUNT(*), surface FROM player_matches group by surface
-    """)
-
-    execute_query(query)
-
-def execute_query(query):
-    with engine.begin() as conn:
-        # df = pd.read_sql(query, conn)
-        result = conn.execute(query)
-
-    # print(df)
-    for row in result:
-        print(row)
-
-
-def top_ten_players() -> None:
-    query = text("""
-    SELECT COUNT(player_id) as matches_count, SUM(is_winner) as win_number, ROUND((SUM(is_winner) * 1.0/COUNT(*)) * 100, 2) AS percentage_win, player_name 
-    FROM player_matches 
-    GROUP BY player_id
-    HAVING matches_count > 50
-    ORDER BY percentage_win DESC
-    LIMIT 20
-    """)
-
-    execute_query(query)
 
 
 def run() -> None:
@@ -146,8 +74,6 @@ def run() -> None:
     write_to_sqlite(df)
     print(f"✅ Ingest gotov: rows={len(df)} cols={len(df.columns)} -> DB={settings.db_path}")
     create_player_matches_tb()
-    # top_ten_players()
-    # find_all_surfaces()
 
 if __name__ == "__main__":
     run()
